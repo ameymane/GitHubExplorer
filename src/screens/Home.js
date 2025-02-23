@@ -70,7 +70,7 @@ const Home = ({ navigation }) => {
       setError('');
     }
   };
-
+  // amey
   // Toggle dark/light mode when modeBtn is pressed
   const toggleMode = () => {
     toggleDarkMode(prevMode => !prevMode);
