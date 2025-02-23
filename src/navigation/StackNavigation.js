@@ -19,7 +19,7 @@ const StackNavigation = () => {
         <stack.Screen component={Splash} name="Splash" />
         <stack.Screen component={Home} name="Home" />
         <stack.Screen component={BottomNav} name="BottomNavigation" />
-        <stack.Screen name="RepoDetails" component={RepoDetails} />
+        <stack.Screen component={RepoDetails} name="RepoDetails"  />
       </stack.Navigator>
     </NavigationContainer>
   );

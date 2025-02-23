@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,11 @@ import {
   Linking,
   TouchableOpacity,
 } from 'react-native';
-import { FavoritesContext } from '../contextApi/FavoritesContext';
+import {FavoritesContext} from '../contextApi/FavoritesContext';
 
-const RepoDetails = ({ route }) => {
-  const { repository } = route.params;
-  const { isDarkMode, toggleDarkMode } = useContext(FavoritesContext);
+const RepoDetails = ({route}) => {
+  const {repository} = route.params;
+  const {isDarkMode, toggleDarkMode} = useContext(FavoritesContext);
 
   const toggleMode = () => {
     toggleDarkMode(prevMode => !prevMode);
@@ -23,109 +23,174 @@ const RepoDetails = ({ route }) => {
     : 'N/A';
 
   return (
-    <ScrollView
-      style={[
-        styles.container,
-        { backgroundColor: isDarkMode ? '#121212' : '#fafafa' },
-      ]}>
-      <View style={styles.header}>
-        <Image
-          source={{ uri: repository.owner.avatar_url }}
-          style={styles.avatar}
-        />
-        <View style={styles.headerText}>
-          <Text style={[styles.repoName, { color: isDarkMode ? '#fff' : '#222' }]}>
-            {repository.name}
-          </Text>
-          <Text style={[styles.ownerName, { color: isDarkMode ? '#ccc' : '#555' }]}>
-            {repository.owner.login}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#333' }]}>
-          Description
-        </Text>
-        <Text style={[styles.description, { color: isDarkMode ? '#ddd' : '#444' }]}>
-          {repository.description || 'No description provided.'}
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#333' }]}>
-          Statistics
-        </Text>
-        <View style={styles.statsRow}>
-          <View style={styles.statBlock}>
-            <Text style={[styles.statValue, { color: isDarkMode ? '#fff' : '#222' }]}>
-              ⭐ {repository.stargazers_count}
+    <View style={styles.parentContainer}>
+      <ScrollView
+        style={[
+          styles.container,
+          {backgroundColor: isDarkMode ? '#121212' : '#fafafa'},
+        ]}>
+        <View style={styles.header}>
+          <Image
+            source={{uri: repository.owner.avatar_url}}
+            style={styles.avatar}
+          />
+          <View style={styles.headerText}>
+            <Text
+              style={[styles.repoName, {color: isDarkMode ? '#fff' : '#222'}]}>
+              {repository.name}
             </Text>
-            <Text style={[styles.statLabel, { color: isDarkMode ? '#ccc' : '#666' }]}>
-              Stars
-            </Text>
-          </View>
-          <View style={styles.statBlock}>
-            <Text style={[styles.statValue, { color: isDarkMode ? '#fff' : '#222' }]}>
-              🍴 {repository.forks_count}
-            </Text>
-            <Text style={[styles.statLabel, { color: isDarkMode ? '#ccc' : '#666' }]}>
-              Forks
+            <Text
+              style={[styles.ownerName, {color: isDarkMode ? '#ccc' : '#555'}]}>
+              {repository.owner.login}
             </Text>
           </View>
         </View>
-        <View style={styles.statsRow}>
-          <View style={styles.statBlock}>
-            <Text style={[styles.statValue, { color: isDarkMode ? '#fff' : '#222' }]}>
-              👀 {repository.watchers_count || 'N/A'}
-            </Text>
-            <Text style={[styles.statLabel, { color: isDarkMode ? '#ccc' : '#666' }]}>
-              Watchers
-            </Text>
-          </View>
-          <View style={styles.statBlock}>
-            <Text style={[styles.statValue, { color: isDarkMode ? '#fff' : '#222' }]}>
-              🐞 {repository.open_issues_count || 'N/A'}
-            </Text>
-            <Text style={[styles.statLabel, { color: isDarkMode ? '#ccc' : '#666' }]}>
-              Open Issues
-            </Text>
-          </View>
-        </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#333' }]}>
-          Additional Details
-        </Text>
-        <Text style={[styles.detail, { color: isDarkMode ? '#ddd' : '#444' }]}>
-          Language: {repository.language || 'N/A'}
-        </Text>
-        <Text style={[styles.detail, { color: isDarkMode ? '#ddd' : '#444' }]}>
-          Last Updated: {updatedDate}
-        </Text>
-      </View>
-
-      {repository.html_url && (
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#333' }]}>
-            Repository Link
+          <Text
+            style={[
+              styles.sectionTitle,
+              {color: isDarkMode ? '#fff' : '#333'},
+            ]}>
+            Description
           </Text>
-          <TouchableOpacity onPress={() => Linking.openURL(repository.html_url)}>
-            <Text style={styles.link}>{repository.html_url}</Text>
-          </TouchableOpacity>
+          <Text
+            style={[styles.description, {color: isDarkMode ? '#ddd' : '#444'}]}>
+            {repository.description || 'No description provided.'}
+          </Text>
         </View>
-      )}
-      <TouchableOpacity style={styles.modeBtn} onPress={toggleMode}>
-        <Text style={styles.modeBtnText}>{isDarkMode ? '☀️' : '🌙'}</Text>
+
+        <View style={styles.section}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {color: isDarkMode ? '#fff' : '#333'},
+            ]}>
+            Statistics
+          </Text>
+          <View style={styles.statsRow}>
+            <View style={styles.statBlock}>
+              <Text
+                style={[
+                  styles.statValue,
+                  {color: isDarkMode ? '#fff' : '#222'},
+                ]}>
+                ⭐ {repository.stargazers_count}
+              </Text>
+              <Text
+                style={[
+                  styles.statLabel,
+                  {color: isDarkMode ? '#ccc' : '#666'},
+                ]}>
+                Stars
+              </Text>
+            </View>
+            <View style={styles.statBlock}>
+              <Text
+                style={[
+                  styles.statValue,
+                  {color: isDarkMode ? '#fff' : '#222'},
+                ]}>
+                🍴 {repository.forks_count}
+              </Text>
+              <Text
+                style={[
+                  styles.statLabel,
+                  {color: isDarkMode ? '#ccc' : '#666'},
+                ]}>
+                Forks
+              </Text>
+            </View>
+          </View>
+          <View style={styles.statsRow}>
+            <View style={styles.statBlock}>
+              <Text
+                style={[
+                  styles.statValue,
+                  {color: isDarkMode ? '#fff' : '#222'},
+                ]}>
+                👀 {repository.watchers_count || 'N/A'}
+              </Text>
+              <Text
+                style={[
+                  styles.statLabel,
+                  {color: isDarkMode ? '#ccc' : '#666'},
+                ]}>
+                Watchers
+              </Text>
+            </View>
+            <View style={styles.statBlock}>
+              <Text
+                style={[
+                  styles.statValue,
+                  {color: isDarkMode ? '#fff' : '#222'},
+                ]}>
+                🐞 {repository.open_issues_count || 'N/A'}
+              </Text>
+              <Text
+                style={[
+                  styles.statLabel,
+                  {color: isDarkMode ? '#ccc' : '#666'},
+                ]}>
+                Open Issues
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {color: isDarkMode ? '#fff' : '#333'},
+            ]}>
+            Additional Details
+          </Text>
+          <Text style={[styles.detail, {color: isDarkMode ? '#ddd' : '#444'}]}>
+            Language: {repository.language || 'N/A'}
+          </Text>
+          <Text style={[styles.detail, {color: isDarkMode ? '#ddd' : '#444'}]}>
+            Last Updated: {updatedDate}
+          </Text>
+        </View>
+
+        {repository.html_url && (
+          <View style={styles.section}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                {color: isDarkMode ? '#fff' : '#333'},
+              ]}>
+              Repository Link
+            </Text>
+            <TouchableOpacity
+              onPress={() => Linking.openURL(repository.html_url)}>
+              <Text style={styles.link}>{repository.html_url}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
+      <TouchableOpacity
+        style={[
+          styles.modeBtn,
+          {backgroundColor: isDarkMode ? '#fff' : '#000'},
+        ]}
+        onPress={toggleMode}>
+        <Text
+          style={[styles.modeBtnText, {color: isDarkMode ? '#000' : '#fff'}]}>
+          {isDarkMode ? '☀️' : '🌙'}
+        </Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 };
 
 export default RepoDetails;
 
 const styles = StyleSheet.create({
+  parentContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 16,
@@ -195,9 +260,9 @@ const styles = StyleSheet.create({
   },
   modeBtn: {
     position: 'absolute',
-    bottom: '10%',
-    right: 20,
-    backgroundColor: '#000',
+    bottom: 25,
+    right: 0,
+    margin: 20,
     height: 50,
     width: 50,
     borderRadius: 25,
@@ -206,6 +271,5 @@ const styles = StyleSheet.create({
   },
   modeBtnText: {
     fontSize: 24,
-    color: '#fff',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import {
   Image,
   StyleSheet,
@@ -9,18 +9,18 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
-import { FavoritesContext } from '../contextApi/FavoritesContext';
+import {FavoritesContext} from '../contextApi/FavoritesContext';
 
 const initialData = [];
 
-const Home = ({ navigation }) => {
+const Home = ({navigation}) => {
   const [selectedTab, setSelectedTab] = useState('All Repositories');
   const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { favorites, toggleFavorite, isDarkMode, toggleDarkMode } =
+  const {favorites, toggleFavorite, isDarkMode, toggleDarkMode} =
     useContext(FavoritesContext);
 
   const fetchRepositories = async query => {
@@ -28,7 +28,6 @@ const Home = ({ navigation }) => {
     setError('');
 
     try {
-      // Check internet connection
       const netInfo = await NetInfo.fetch();
       if (!netInfo.isConnected) {
         setError('No internet connection. Please check your network.');
@@ -70,13 +69,11 @@ const Home = ({ navigation }) => {
       setError('');
     }
   };
-  // amey
-  // Toggle dark/light mode when modeBtn is pressed
+
   const toggleMode = () => {
     toggleDarkMode(prevMode => !prevMode);
   };
 
-  // Clear search input and reset states
   const clearSearch = () => {
     setSearchQuery('');
     setRepositories([]);
@@ -84,8 +81,73 @@ const Home = ({ navigation }) => {
   };
 
   const openRepoDetails = repository => {
-    navigation.navigate('RepoDetails', { repository });
+    console.log('Repo card pressed:', repository.name);
+    navigation.navigate('RepoDetails', {repository});
   };
+
+  const renderRepoCard = ({item}) => (
+    <View
+      style={[
+        styles.repoCard,
+        isDarkMode ? styles.darkCard : styles.lightCard,
+      ]}>
+      <TouchableOpacity
+        style={styles.cardContent}
+        onPress={() => openRepoDetails(item)}
+        activeOpacity={0.8}>
+        <View style={styles.topRow}>
+          <Image
+            source={{uri: item.owner.avatar_url}}
+            style={styles.repoAvatar}
+          />
+          <View style={styles.repoTextContainer}>
+            <Text
+              style={[
+                styles.repoName,
+                isDarkMode ? styles.darkText : styles.lightText,
+              ]}>
+              {item.name}
+            </Text>
+            <Text style={styles.repoOwner}>{item.owner.login}</Text>
+          </View>
+        </View>
+        <Text
+          style={[
+            styles.repoDescription,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}>
+          {item.description || 'No description'}
+        </Text>
+        <View style={styles.repoStats}>
+          <Text
+            style={[styles.statText, {color: isDarkMode ? '#fff' : '#000'}]}>
+            ⭐ {item.stargazers_count}
+          </Text>
+          <Text
+            style={[styles.statText, {color: isDarkMode ? '#fff' : '#000'}]}>
+            🍴 {item.forks_count}
+          </Text>
+          <Text style={styles.language}>{item.language || 'N/A'}</Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.favoriteButton}
+        onPress={() => toggleFavorite(item)}>
+        <Image
+          source={
+            favorites.some(fav => fav.id === item.id)
+              ? require('../components/assets/images/icons/heart-filled.png')
+              : require('../components/assets/images/icons/heart-outline.png')
+          }
+          style={[
+            styles.favoriteIcon,
+            {tintColor: isDarkMode ? '#fff' : '#000'},
+          ]}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View
@@ -138,18 +200,12 @@ const Home = ({ navigation }) => {
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={clearSearch}>
-            <Text
-              style={{
-                color: isDarkMode ? '#fff' : '#000',
-                marginLeft: 10,
-              }}>
+            <Text style={{color: isDarkMode ? '#fff' : '#000', marginLeft: 10}}>
               Clear
             </Text>
           </TouchableOpacity>
         )}
       </View>
-
-      {/* Tabs */}
       <View style={styles.tabsContainer}>
         {['All Repositories', 'Favorites'].map(tab => (
           <TouchableOpacity
@@ -170,7 +226,6 @@ const Home = ({ navigation }) => {
         ))}
       </View>
 
-      {/* Error Message */}
       {error ? (
         <Text
           style={[
@@ -180,8 +235,6 @@ const Home = ({ navigation }) => {
           {error}
         </Text>
       ) : null}
-
-      {/* Loading Indicator */}
       {loading && (
         <Text
           style={[
@@ -192,7 +245,6 @@ const Home = ({ navigation }) => {
         </Text>
       )}
 
-      {/* Repository List or Empty Message */}
       {selectedTab === 'Favorites' ? (
         favorites.length === 0 ? (
           <Text
@@ -206,76 +258,10 @@ const Home = ({ navigation }) => {
           <FlatList
             data={favorites}
             keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.repoCard,
-                  isDarkMode ? styles.darkCard : styles.lightCard,
-                ]}
-                onPress={() => openRepoDetails(item)}>
-                <View style={styles.topRow}>
-                  <Image
-                    source={{ uri: item.owner.avatar_url }}
-                    style={styles.repoAvatar}
-                  />
-                  <View style={styles.repoTextContainer}>
-                    <Text
-                      style={[
-                        styles.repoName,
-                        isDarkMode ? styles.darkText : styles.lightText,
-                      ]}>
-                      {item.name}
-                    </Text>
-                    <Text style={styles.repoOwner}>{item.owner.login}</Text>
-                  </View>
-                </View>
-                <Text
-                  style={[
-                    styles.repoDescription,
-                    isDarkMode ? styles.darkText : styles.lightText,
-                  ]}>
-                  {item.description || 'No description'}
-                </Text>
-                <View style={styles.bottomRow}>
-                  <View style={styles.repoStats}>
-                    <Text
-                      style={[
-                        styles.statText,
-                        { color: isDarkMode ? '#fff' : '#000' },
-                      ]}>
-                      ⭐ {item.stargazers_count}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.statText,
-                        { color: isDarkMode ? '#fff' : '#000' },
-                      ]}>
-                      🍴 {item.forks_count}
-                    </Text>
-                    <Text style={styles.language}>
-                      {item.language || 'N/A'}
-                    </Text>
-                  </View>
-                  <TouchableOpacity onPress={() => toggleFavorite(item)}>
-                    <Image
-                      source={
-                        favorites.some(fav => fav.id === item.id)
-                          ? require('../components/assets/images/icons/heart-filled.png')
-                          : require('../components/assets/images/icons/heart-outline.png')
-                      }
-                      style={[
-                        styles.favoriteIcon,
-                        { tintColor: isDarkMode ? '#fff' : '#000' },
-                      ]}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            )}
+            renderItem={renderRepoCard}
           />
         )
-      ) : // All Repositories tab
-      repositories.length === 0 ? (
+      ) : repositories.length === 0 ? (
         searchQuery.trim() === '' ? (
           <Text
             style={[
@@ -297,77 +283,21 @@ const Home = ({ navigation }) => {
         <FlatList
           data={repositories}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.repoCard,
-                isDarkMode ? styles.darkCard : styles.lightCard,
-              ]}>
-              <View style={styles.topRow}>
-                <Image
-                  source={{ uri: item.owner.avatar_url }}
-                  style={styles.repoAvatar}
-                />
-                <View style={styles.repoTextContainer}>
-                  <Text
-                    style={[
-                      styles.repoName,
-                      isDarkMode ? styles.darkText : styles.lightText,
-                    ]}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.repoOwner}>{item.owner.login}</Text>
-                </View>
-              </View>
-              <Text
-                style={[
-                  styles.repoDescription,
-                  isDarkMode ? styles.darkText : styles.lightText,
-                ]}>
-                {item.description || 'No description'}
-              </Text>
-              <View style={styles.bottomRow}>
-                <View style={styles.repoStats}>
-                  <Text
-                    style={[
-                      styles.statText,
-                      { color: isDarkMode ? '#fff' : '#000' },
-                    ]}>
-                    ⭐ {item.stargazers_count}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.statText,
-                      { color: isDarkMode ? '#fff' : '#000' },
-                    ]}>
-                    🍴 {item.forks_count}
-                  </Text>
-                  <Text style={styles.language}>
-                    {item.language || 'N/A'}
-                  </Text>
-                </View>
-                <TouchableOpacity onPress={() => toggleFavorite(item)}>
-                  <Image
-                    source={
-                      favorites.some(fav => fav.id === item.id)
-                        ? require('../components/assets/images/icons/heart-filled.png')
-                        : require('../components/assets/images/icons/heart-outline.png')
-                    }
-                    style={[
-                      styles.favoriteIcon,
-                      { tintColor: isDarkMode ? '#fff' : '#000' },
-                    ]}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+          renderItem={renderRepoCard}
         />
       )}
 
-      {/* Mode Toggle Button */}
-      <TouchableOpacity style={styles.modeBtn} onPress={toggleMode}>
-        <Text style={styles.modeBtnText}>{isDarkMode ? '☀️' : '🌙'}</Text>
+      {/* Mode Button */}
+      <TouchableOpacity
+        style={[
+          styles.modeBtn,
+          {backgroundColor: isDarkMode ? '#fff' : '#000'},
+        ]}
+        onPress={toggleMode}>
+        <Text
+          style={[styles.modeBtnText, {color: isDarkMode ? '#000' : '#fff'}]}>
+          {isDarkMode ? '☀️' : '🌙'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -379,8 +309,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  darkBackground: { backgroundColor: '#121212' },
-  lightBackground: { backgroundColor: '#f5f5f5' },
+  darkBackground: {backgroundColor: '#121212'},
+  lightBackground: {backgroundColor: '#f5f5f5'},
   headerContainer: {
     width: '100%',
     height: 70,
@@ -388,8 +318,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
   },
-  darkHeader: { backgroundColor: '#222' },
-  lightHeader: { backgroundColor: '#fff' },
+  darkHeader: {backgroundColor: '#222'},
+  lightHeader: {backgroundColor: '#fff'},
   headIcon: {
     width: 40,
     height: 40,
@@ -400,8 +330,8 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginLeft: 15,
   },
-  darkText: { color: '#fff' },
-  lightText: { color: '#000' },
+  darkText: {color: '#fff'},
+  lightText: {color: '#000'},
   searchContainer: {
     marginHorizontal: 20,
     marginVertical: 15,
@@ -410,8 +340,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
   },
-  darkSearch: { backgroundColor: '#333' },
-  lightSearch: { backgroundColor: '#fff' },
+  darkSearch: {backgroundColor: '#333'},
+  lightSearch: {backgroundColor: '#fff'},
   searchIcon: {
     width: 20,
     height: 20,
@@ -455,9 +385,13 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     elevation: 3,
+    position: 'relative',
   },
-  darkCard: { backgroundColor: '#222' },
-  lightCard: { backgroundColor: '#fff' },
+  darkCard: {backgroundColor: '#222'},
+  lightCard: {backgroundColor: '#fff'},
+  cardContent: {
+    pointerEvents: 'box-only',
+  },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -483,11 +417,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 8,
   },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
   repoStats: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -503,10 +432,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 4,
   },
+  favoriteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
   favoriteIcon: {
     width: 24,
     height: 24,
-    tintColor: '#000',
   },
   emptyText: {
     textAlign: 'center',

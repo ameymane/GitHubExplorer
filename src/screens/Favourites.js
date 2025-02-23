@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,71 @@ import {
 } from 'react-native';
 import {FavoritesContext} from '../contextApi/FavoritesContext';
 
-const FavoritesScreen = () => {
-   const { favorites, toggleFavorite, isDarkMode, toggleDarkMode } = useContext(FavoritesContext);
-  // const [isDarkMode, setIsDarkMode] = useState(false);
+const FavoritesScreen = ({navigation}) => {
+  const {favorites, toggleFavorite, isDarkMode, toggleDarkMode} =
+    useContext(FavoritesContext);
+
   const toggleMode = () => {
     toggleDarkMode(prevMode => !prevMode);
   };
+
+  const renderRepoCard = ({item}) => (
+    <TouchableOpacity
+      style={[styles.repoCard, isDarkMode ? styles.darkCard : styles.lightCard]}
+      onPress={() => navigation.navigate('RepoDetails', {repository: item})}
+      activeOpacity={0.8}>
+      <View style={styles.topRow}>
+        <Image
+          source={{uri: item.owner.avatar_url}}
+          style={styles.repoAvatar}
+        />
+        <View style={styles.repoTextContainer}>
+          <Text
+            style={[
+              styles.repoName,
+              isDarkMode ? styles.darkText : styles.lightText,
+            ]}>
+            {item.name}
+          </Text>
+          <Text style={styles.repoOwner}>{item.owner.login}</Text>
+        </View>
+      </View>
+      <Text
+        style={[
+          styles.repoDescription,
+          isDarkMode ? styles.darkText : styles.lightText,
+        ]}>
+        {item.description || 'No description'}
+      </Text>
+      <View style={styles.bottomRow}>
+        <View style={styles.repoStats}>
+          <Text
+            style={[styles.statText, {color: isDarkMode ? '#fff' : '#000'}]}>
+            ⭐ {item.stargazers_count}
+          </Text>
+          <Text
+            style={[styles.statText, {color: isDarkMode ? '#fff' : '#000'}]}>
+            🍴 {item.forks_count}
+          </Text>
+          <Text style={styles.language}>{item.language || 'N/A'}</Text>
+        </View>
+
+        <TouchableOpacity onPress={() => toggleFavorite(item)}>
+          <Image
+            source={
+              favorites.some(fav => fav.id === item.id)
+                ? require('../components/assets/images/icons/heart-filled.png')
+                : require('../components/assets/images/icons/heart-outline.png')
+            }
+            style={[
+              styles.favoriteIcon,
+              {tintColor: isDarkMode ? '#fff' : '#000'},
+            ]}
+          />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View
@@ -28,7 +87,7 @@ const FavoritesScreen = () => {
           styles.headerContainer,
           isDarkMode ? styles.darkHeader : styles.lightHeader,
         ]}>
-          <Image
+        <Image
           source={
             isDarkMode
               ? require('../components/assets/images/github-white.png')
@@ -50,78 +109,21 @@ const FavoritesScreen = () => {
         <FlatList
           data={favorites}
           keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
-            <View
-              style={[
-                styles.repoCard,
-                isDarkMode ? styles.darkCard : styles.lightCard,
-              ]}>
-              <View style={styles.topRow}>
-                <Image
-                  source={{uri: item.owner.avatar_url}}
-                  style={styles.repoAvatar}
-                />
-                <View style={styles.repoTextContainer}>
-                  <Text
-                    style={[
-                      styles.repoName,
-                      isDarkMode ? styles.darkText : styles.lightText,
-                    ]}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.repoOwner}>{item.owner.login}</Text>
-                </View>
-              </View>
-
-              {/* Description */}
-              <Text
-                style={[
-                  styles.repoDescription,
-                  isDarkMode ? styles.darkText : styles.lightText,
-                ]}>
-                {item.description || 'No description'}
-              </Text>
-
-              <View style={styles.bottomRow}>
-                <View style={styles.repoStats}>
-                  <Text
-                    style={[
-                      styles.statText,
-                      {color: isDarkMode ? '#fff' : '#000'},
-                    ]}>
-                    ⭐ {item.stargazers_count}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.statText,
-                      {color: isDarkMode ? '#fff' : '#000'},
-                    ]}>
-                    🍴 {item.forks_count}
-                  </Text>
-                  <Text style={styles.language}>{item.language || 'N/A'}</Text>
-                </View>
-
-                <TouchableOpacity onPress={() => toggleFavorite(item)}>
-                  <Image
-                    source={
-                      favorites.some(fav => fav.id === item.id)
-                        ? require('../components/assets/images/icons/heart-filled.png')
-                        : require('../components/assets/images/icons/heart-outline.png')
-                    }
-                    style={[
-                      styles.favoriteIcon,
-                      {tintColor: isDarkMode ? '#fff' : '#000'},
-                    ]}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+          renderItem={renderRepoCard}
         />
       )}
-      {/* Mode Toggle Button */}
-      <TouchableOpacity style={styles.modeBtn} onPress={toggleMode}>
-        <Text style={styles.modeBtnText}>{isDarkMode ? '☀️' : '🌙'}</Text>
+
+      <TouchableOpacity
+        style={[
+          styles.modeBtn,
+
+          {backgroundColor: isDarkMode ? '#fff' : '#000'},
+        ]}
+        onPress={toggleMode}>
+        <Text
+          style={[styles.modeBtnText, {color: isDarkMode ? '#000' : '#fff'}]}>
+          {isDarkMode ? '☀️' : '🌙'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -168,9 +170,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginBottom: 15,
     padding: 15,
-    marginVertical:20,
+    marginVertical: 20,
     borderRadius: 8,
     elevation: 3,
+    position: 'relative',
   },
   darkCard: {backgroundColor: '#222'},
   lightCard: {backgroundColor: '#fff'},
@@ -222,7 +225,6 @@ const styles = StyleSheet.create({
   favoriteIcon: {
     width: 24,
     height: 24,
-    tintColor: '#000',
   },
   modeBtn: {
     position: 'absolute',

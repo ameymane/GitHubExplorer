@@ -140,7 +140,6 @@ const ProfileScreen = () => {
         </View>
       </View>
 
-      {/* Repositories Section */}
       <View style={styles.sectionContainer}>
         <Text
           style={[
@@ -197,9 +196,17 @@ const ProfileScreen = () => {
           )}
         />
       </View>
-      {/* Mode Toggle Button */}
-      <TouchableOpacity style={styles.modeBtn} onPress={toggleMode}>
-        <Text style={styles.modeBtnText}>{isDarkMode ? '☀️' : '🌙'}</Text>
+
+      <TouchableOpacity
+        style={[
+          styles.modeBtn,
+          {backgroundColor: isDarkMode ? '#fff' : '#000'},
+        ]}
+        onPress={toggleMode}>
+        <Text
+          style={[styles.modeBtnText, {color: isDarkMode ? '#000' : '#fff'}]}>
+          {isDarkMode ? '☀️' : '🌙'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -208,7 +215,6 @@ const ProfileScreen = () => {
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  // Container styles
   container: {
     flex: 1,
   },
@@ -218,7 +224,7 @@ const styles = StyleSheet.create({
   lightContainer: {
     backgroundColor: '#fff',
   },
-  // Header styles
+
   headerContainer: {
     width: '100%',
     height: 70,
@@ -242,14 +248,14 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginLeft: 15,
   },
-  // Text color variants
+
   darkText: {
     color: '#fff',
   },
   lightText: {
     color: '#000',
   },
-  // Profile Header styles
+
   profileHeader: {
     alignItems: 'center',
     paddingVertical: 20,
@@ -318,7 +324,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#555',
   },
-  // Section styles
   sectionContainer: {
     flex: 1,
     paddingHorizontal: 16,
